@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FrozenNow — Heat. Eat. Repeat.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-deep: #0A1628;
+    --blue-mid: #1B3A6B;
+    --blue-bright: #1E6FFF;
+    --blue-light: #4D9FFF;
+    --accent-orange: #FF6B35;
+    --accent-warm: #FFB830;
+    --cream: #FFF8F0;
+    --white: #FFFFFF;
+    --text-muted: #8A9BB5;
+    --card-bg: #0F2040;
+    --card-border: rgba(30,111,255,0.15);
+    --gradient-hero: linear-gradient(135deg, #0A1628 0%, #1B3A6B 60%, #0A2550 100%);
+    --gradient-accent: linear-gradient(90deg, #1E6FFF, #FF6B35);
+  }
+ 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--blue-deep);
+    color: var(--white);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+ 
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+ 
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(20px);
+    background: rgba(10,22,40,0.8);
+    border-bottom: 1px solid rgba(30,111,255,0.12);
+    transition: all 0.3s;
+  }
+ 
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+  }
+ 
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+ 
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+ 
+  .nav-links a:hover { color: var(--white); }
+ 
+  .nav-cta {
+    background: var(--blue-bright);
+    color: var(--white) !important;
+    padding: 0.55rem 1.4rem;
+    border-radius: 50px;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+  }
+ 
+  .nav-cta:hover {
+    background: var(--accent-orange) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(255,107,53,0.3);
+  }
+ 
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+ 
+  .hamburger span {
+    width: 24px; height: 2px;
+    background: var(--white);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+ 
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    background: var(--gradient-hero);
+    display: flex;
+    align-items: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  #hero::before {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(30,111,255,0.18) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    border-radius: 50%;
+  }
+ 
+  #hero::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,107,53,0.12) 0%, transparent 70%);
+    bottom: -100px; left: -100px;
+    border-radius: 50%;
+  }
+ 
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+ 
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(30,111,255,0.15);
+    border: 1px solid rgba(30,111,255,0.3);
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--blue-light);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+ 
+  .hero-badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+ 
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+ 
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+ 
+  .hero-title .gradient-text {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+ 
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+ 
+  .hero-btns {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+ 
+  .btn-primary {
+    background: var(--blue-bright);
+    color: var(--white);
+    padding: 0.9rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(30,111,255,0.35);
+    border: none;
+    cursor: pointer;
+  }
+ 
+  .btn-primary:hover {
+    background: var(--accent-orange);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255,107,53,0.4);
+  }
+ 
+  .btn-secondary {
+    background: transparent;
+    color: var(--white);
+    padding: 0.9rem 2rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+ 
+  .btn-secondary:hover {
+    border-color: var(--blue-bright);
+    color: var(--blue-light);
+    background: rgba(30,111,255,0.08);
+  }
+ 
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 3rem;
+    animation: fadeUp 0.7s ease 0.4s both;
+  }
+ 
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+ 
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+  }
+ 
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+  }
+ 
+  /* Hero visual */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+ 
+  .hero-plate {
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle at 40% 35%, #1B3A6B, #0A1628);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 0 0 1px rgba(30,111,255,0.15);
+  }
+ 
+  .food-emoji-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+ 
+  .food-emoji {
+    position: absolute;
+    font-size: 2.5rem;
+    animation: orbit 12s linear infinite;
+  }
+ 
+  .food-emoji:nth-child(1) { animation-delay: 0s; }
+  .food-emoji:nth-child(2) { animation-delay: -3s; }
+  .food-emoji:nth-child(3) { animation-delay: -6s; }
+  .food-emoji:nth-child(4) { animation-delay: -9s; }
+ 
+  @keyframes orbit {
+    0% { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
+  }
+ 
+  .hero-center-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 5rem;
+    text-align: center;
+    line-height: 1;
+    z-index: 1;
+  }
+ 
+  .floating-tag {
+    position: absolute;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    animation: float 3s ease-in-out infinite;
+    white-space: nowrap;
+  }
+ 
+  .floating-tag:nth-child(3) { top: 5%; right: 0; animation-delay: 0s; }
+  .floating-tag:nth-child(4) { bottom: 15%; left: 0; animation-delay: 1.5s; }
+ 
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+ 
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
+  /* ── SECTION BASE ── */
+  section { padding: 6rem 2rem; }
+ 
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+ 
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--blue-light);
+    margin-bottom: 1rem;
+  }
+ 
+  .section-tag::before {
+    content: '';
+    width: 20px; height: 2px;
+    background: var(--blue-bright);
+    border-radius: 2px;
+  }
+ 
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+ 
+  .section-sub {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 560px;
+  }
+ 
+  /* ── PROBLEM ── */
+  #problem {
+    background: #080F1E;
+  }
+ 
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    margin-top: 3rem;
+  }
+ 
+  .problem-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+ 
+  .problem-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all 0.3s;
+    cursor: default;
+  }
+ 
+  .problem-card:hover {
+    border-color: var(--blue-bright);
+    transform: translateX(6px);
+    background: rgba(30,111,255,0.06);
+  }
+ 
+  .problem-icon {
+    width: 48px; height: 48px;
+    background: rgba(255,107,53,0.12);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+ 
+  .problem-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+ 
+  .problem-card p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+ 
+  .problem-stat-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+ 
+  .big-stat {
+    background: linear-gradient(135deg, rgba(30,111,255,0.12), rgba(30,111,255,0.04));
+    border: 1px solid rgba(30,111,255,0.2);
+    border-radius: 20px;
+    padding: 2rem;
+  }
+ 
+  .big-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--blue-light);
+    line-height: 1;
+    display: block;
+  }
+ 
+  .big-stat-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    line-height: 1.5;
+  }
+ 
+  /* ── SOLUTION ── */
+  #solution {
+    background: var(--blue-deep);
+  }
+ 
+  .solution-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+ 
+  .sol-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s;
+  }
+ 
+  .sol-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gradient-accent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+ 
+  .sol-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(30,111,255,0.3);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+ 
+  .sol-card:hover::before { opacity: 1; }
+ 
+  .sol-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 1.2rem;
+    display: block;
+  }
+ 
+  .sol-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+ 
+  .sol-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+ 
+  /* ── PRODUCTS ── */
+  #products {
+    background: #080F1E;
+  }
+ 
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+ 
+  .product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.35s;
+    position: relative;
+  }
+ 
+  .product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    border-color: rgba(30,111,255,0.35);
+  }
+ 
+  .product-img {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .product-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, var(--card-bg) 100%);
+  }
+ 
+  .product-img.roti { background: linear-gradient(135deg, #1a2a1a, #0d1f0d); }
+  .product-img.paratha { background: linear-gradient(135deg, #2a1a0d, #1f0d00); }
+  .product-img.combo { background: linear-gradient(135deg, #0d1a2a, #001a2a); }
+ 
+  .product-body {
+    padding: 1.5rem;
+  }
+ 
+  .product-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--blue-light);
+    margin-bottom: 0.5rem;
+  }
+ 
+  .product-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+ 
+  .product-desc {
+    color: var(--text-muted);
+    font-size: 0.87rem;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+ 
+  .product-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+ 
+  .product-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--accent-warm);
+  }
+ 
+  .product-price span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+  }
+ 
+  .btn-sm {
+    background: rgba(30,111,255,0.15);
+    color: var(--blue-light);
+    border: 1px solid rgba(30,111,255,0.25);
+    padding: 0.5rem 1.1rem;
+    border-radius: 50px;
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+  }
+ 
+  .btn-sm:hover {
+    background: var(--blue-bright);
+    color: var(--white);
+    border-color: var(--blue-bright);
+    transform: scale(1.04);
+  }
+ 
+  /* ── HOW IT WORKS ── */
+  #how {
+    background: var(--blue-deep);
+  }
+ 
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+    position: relative;
+  }
+ 
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 36px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blue-bright), transparent);
+    z-index: 0;
+  }
+ 
+  .step {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+ 
+  .step-num {
+    width: 72px; height: 72px;
+    background: var(--blue-mid);
+    border: 2px solid var(--blue-bright);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1.2rem;
+    transition: all 0.3s;
+    position: relative;
+  }
+ 
+  .step:hover .step-num {
+    background: var(--blue-bright);
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(30,111,255,0.5);
+  }
+ 
+  .step h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+ 
+  .step p {
+    color: var(--text-muted);
+    font-size: 0.87rem;
+    line-height: 1.5;
+  }
+ 
+  /* ── PLANS ── */
+  #plans {
+    background: #080F1E;
+  }
+ 
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+    align-items: start;
+  }
+ 
+  .plan-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 2rem;
+    transition: all 0.35s;
+    position: relative;
+  }
+ 
+  .plan-card.featured {
+    background: linear-gradient(145deg, #102560, #0F2040);
+    border-color: var(--blue-bright);
+    transform: scale(1.04);
+    box-shadow: 0 20px 80px rgba(30,111,255,0.25);
+  }
+ 
+  .plan-card.featured::after {
+    content: 'Most Popular';
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-accent);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 1rem;
+    border-radius: 50px;
+    white-space: nowrap;
+  }
+ 
+  .plan-card:hover:not(.featured) {
+    border-color: rgba(30,111,255,0.35);
+    transform: translateY(-4px);
+  }
+ 
+  .plan-icon { font-size: 2.2rem; margin-bottom: 1rem; display: block; }
+ 
+  .plan-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+ 
+  .plan-tagline {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+ 
+  .plan-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+ 
+  .plan-price .amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+  }
+ 
+  .plan-price .period {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+ 
+  .plan-meals {
+    color: var(--blue-light);
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin-bottom: 1.8rem;
+  }
+ 
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+ 
+  .plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+ 
+  .plan-features li::before {
+    content: '✓';
+    color: #4ade80;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+ 
+  .btn-plan {
+    width: 100%;
+    padding: 0.9rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+  }
+ 
+  .btn-plan.outline {
+    background: transparent;
+    border: 1px solid rgba(30,111,255,0.35);
+    color: var(--blue-light);
+  }
+ 
+  .btn-plan.outline:hover {
+    background: rgba(30,111,255,0.1);
+    border-color: var(--blue-bright);
+  }
+ 
+  .btn-plan.solid {
+    background: var(--blue-bright);
+    color: white;
+    box-shadow: 0 4px 20px rgba(30,111,255,0.4);
+  }
+ 
+  .btn-plan.solid:hover {
+    background: var(--accent-orange);
+    box-shadow: 0 8px 30px rgba(255,107,53,0.4);
+    transform: translateY(-2px);
+  }
+ 
+  /* ── TESTIMONIALS ── */
+  #testimonials {
+    background: var(--blue-deep);
+  }
+ 
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+ 
+  .testi-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 1.8rem;
+    transition: all 0.3s;
+  }
+ 
+  .testi-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(30,111,255,0.3);
+  }
+ 
+  .testi-stars {
+    color: var(--accent-warm);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+  }
+ 
+  .testi-text {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: #c8d6ec;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+ 
+  .testi-author {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+ 
+  .testi-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+ 
+  .testi-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+ 
+  .testi-role {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+ 
+  /* ── CTA BANNER ── */
+  #cta {
+    padding: 5rem 2rem;
+    background: linear-gradient(135deg, #0A2550 0%, #1B3A6B 50%, #0A2550 100%);
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  #cta::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(30,111,255,0.15) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+  }
+ 
+  .cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+ 
+  .cta-inner .section-title { font-size: clamp(2rem, 4vw, 3rem); }
+ 
+  .cta-sub {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    margin: 1rem auto 2rem;
+    max-width: 500px;
+    line-height: 1.7;
+  }
+ 
+  .cta-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+ 
+  /* ── CONTACT ── */
+  #contact {
+    background: #080F1E;
+    padding: 5rem 2rem;
+  }
+ 
+  .contact-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+ 
+  .contact-cards {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+  }
+ 
+  .contact-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--white);
+    transition: all 0.3s;
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+  }
+ 
+  .contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  }
+ 
+  .contact-card.whatsapp:hover { border-color: #25d366; }
+  .contact-card.email:hover { border-color: var(--blue-bright); }
+ 
+  .contact-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+ 
+  .contact-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+ 
+  .contact-value {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: 0.2rem;
+  }
+ 
+  /* ── FOOTER ── */
+  footer {
+    background: #040C18;
+    padding: 2rem;
+    text-align: center;
+    border-top: 1px solid rgba(30,111,255,0.1);
+  }
+ 
+  footer p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+ 
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+ 
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+ 
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+ 
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+ 
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      background: rgba(10,22,40,0.97);
+      padding: 1.5rem 2rem;
+      gap: 1.2rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+ 
+    .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 3rem; }
+    .hero-sub { max-width: 100%; }
+    .hero-btns { justify-content: center; }
+    .hero-stats { justify-content: center; }
+    .hero-plate { width: 300px; height: 300px; }
+ 
+    @keyframes orbit {
+      0% { transform: rotate(0deg) translateX(130px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(130px) rotate(-360deg); }
+    }
+ 
+    .problem-grid { grid-template-columns: 1fr; }
+    .solution-cards { grid-template-columns: 1fr; }
+    .products-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .steps::before { display: none; }
+    .plans-grid { grid-template-columns: 1fr; }
+    .plan-card.featured { transform: scale(1); }
+    .testi-grid { grid-template-columns: 1fr; }
+  }
+ 
+  @media (max-width: 600px) {
+    section { padding: 4rem 1.2rem; }
+    .steps { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">FrozenNow</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#plans">Plans</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#contact" class="nav-cta">Order Now</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+ 
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">🚀 Now live in Bhopal — delivering daily</div>
+      <h1 class="hero-title">
+        Heat.<br>
+        Eat.<br>
+        <span class="gradient-text">Repeat.</span>
+      </h1>
+      <p class="hero-sub">India's most affordable frozen meal solution — ready-to-cook rotis, parathas & meal combos in just 2 minutes. No preservatives. No compromise.</p>
+      <div class="hero-btns">
+        <a href="#plans" class="btn-primary">🛒 Order Now</a>
+        <a href="#products" class="btn-secondary">Explore Products →</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">₹4</span>
+          <span class="stat-label">per roti</span>
+        </div>
+        <div class="stat" style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 2rem;">
+          <span class="stat-num">2 min</span>
+          <span class="stat-label">ready time</span>
+        </div>
+        <div class="stat" style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 2rem;">
+          <span class="stat-num">30d</span>
+          <span class="stat-label">shelf life</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-plate">
+        <div class="food-emoji-ring">
+          <span class="food-emoji">🫓</span>
+          <span class="food-emoji">🥗</span>
+          <span class="food-emoji">🫕</span>
+          <span class="food-emoji">🌾</span>
+        </div>
+        <div class="hero-center-text">🍽️</div>
+      </div>
+      <div class="floating-tag">
+        <span>✅</span> FSSAI Certified
+      </div>
+      <div class="floating-tag">
+        <span>❄️</span> Fresh · No Preservatives
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="section-tag">The Problem</div>
+    <h2 class="section-title">Urban India's daily food struggle is real</h2>
+    <div class="problem-grid">
+      <div class="problem-cards">
+        <div class="problem-card reveal">
+          <div class="problem-icon">⏰</div>
+          <div>
+            <h3>No Time to Cook</h3>
+            <p>Students, working professionals, and bachelors can't afford 30–45 minutes daily on cooking. Life is faster now.</p>
+          </div>
+        </div>
+        <div class="problem-card reveal">
+          <div class="problem-icon">💸</div>
+          <div>
+            <h3>Expensive Delivery Apps</h3>
+            <p>Swiggy & Zomato meals cost ₹150–₹350 per meal with surge fees. That's ₹5,000+ monthly just on food delivery.</p>
+          </div>
+        </div>
+        <div class="problem-card reveal">
+          <div class="problem-icon">🦠</div>
+          <div>
+            <h3>Unhygienic Street Food</h3>
+            <p>60% of students eat street food 3–5 times weekly, risking health and spending heavily without consistency.</p>
+          </div>
+        </div>
+        <div class="problem-card reveal">
+          <div class="problem-icon">📦</div>
+          <div>
+            <h3>Inconsistent Tiffin Services</h3>
+            <p>Tiffin quality varies wildly. No control over ingredients, hygiene, or delivery timings.</p>
+          </div>
+        </div>
+      </div>
+      <div class="problem-stat-block">
+        <div class="big-stat reveal">
+          <span class="big-stat-num">₹1,10,000 Cr</span>
+          <p class="big-stat-desc">Urban India spends this yearly on quick food solutions — a market screaming for a better option.</p>
+        </div>
+        <div class="big-stat reveal">
+          <span class="big-stat-num">18% CAGR</span>
+          <p class="big-stat-desc">Frozen food industry growth rate in India. The demand is massive and accelerating.</p>
+        </div>
+        <div class="big-stat reveal">
+          <span class="big-stat-num">₹15K Cr</span>
+          <p class="big-stat-desc">Total Indian frozen food market size in 2025 — wide open for disruption.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="container">
+    <div class="section-tag">Our Solution</div>
+    <h2 class="section-title">FrozenNow changes everything</h2>
+    <p class="section-sub">We've built the most affordable, hygienic, and convenient frozen meal system for everyday Indian life.</p>
+    <div class="solution-cards">
+      <div class="sol-card reveal">
+        <span class="sol-emoji">⚡</span>
+        <h3>Ready in 2 Minutes</h3>
+        <p>Frozen rotis, parathas & complete meal combos that cook faster than boiling water. Just heat and eat.</p>
+      </div>
+      <div class="sol-card reveal">
+        <span class="sol-emoji">💰</span>
+        <h3>Radically Affordable</h3>
+        <p>₹4–₹6 per roti, ₹50–₹70 meal combos. 20–30% cheaper than alternatives without sacrificing quality or margins.</p>
+      </div>
+      <div class="sol-card reveal">
+        <span class="sol-emoji">🛡️</span>
+        <h3>100% Hygienic & Certified</h3>
+        <p>Freshly prepared daily, zero preservatives, FSSAI certified. Taste exactly like homemade — because they are.</p>
+      </div>
+      <div class="sol-card reveal">
+        <span class="sol-emoji">❄️</span>
+        <h3>15–30 Day Shelf Life</h3>
+        <p>Stock up for the week or month. No daily ordering needed. Just pull from your freezer when hunger strikes.</p>
+      </div>
+      <div class="sol-card reveal">
+        <span class="sol-emoji">🚚</span>
+        <h3>Doorstep Delivery</h3>
+        <p>Weekly subscriptions delivered straight to your hostel, PG, or home. Zero friction, maximum convenience.</p>
+      </div>
+      <div class="sol-card reveal">
+        <span class="sol-emoji">♻️</span>
+        <h3>Zero Wastage Model</h3>
+        <p>Made-to-order with precise demand forecasting. Fresh every batch, minimal food waste, maximum value.</p>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="container">
+    <div class="section-tag">Our Products</div>
+    <h2 class="section-title">Meals built for real Indian life</h2>
+    <p class="section-sub">Every product crafted for taste, convenience, and your pocket.</p>
+    <div class="products-grid">
+      <div class="product-card reveal">
+        <div class="product-img roti">🫓</div>
+        <div class="product-body">
+          <div class="product-tag">Bestseller</div>
+          <div class="product-name">Frozen Rotis</div>
+          <p class="product-desc">Soft, fresh wheat rotis prepared daily. Tastes just like homemade — straight from your tawa in 90 seconds.</p>
+          <div class="product-footer">
+            <div class="product-price">₹4–₹6 <span>/ roti</span></div>
+            <a href="#plans" class="btn-sm">Order →</a>
+          </div>
+        </div>
+      </div>
+      <div class="product-card reveal">
+        <div class="product-img paratha">🧆</div>
+        <div class="product-body">
+          <div class="product-tag">Staff Pick</div>
+          <div class="product-name">Stuffed Parathas</div>
+          <p class="product-desc">Aloo, gobhi, paneer, and mixed veg parathas. Rich, filling, and ready in 2 minutes on a pan.</p>
+          <div class="product-footer">
+            <div class="product-price">₹15–₹25 <span>/ paratha</span></div>
+            <a href="#plans" class="btn-sm">Order →</a>
+          </div>
+        </div>
+      </div>
+      <div class="product-card reveal">
+        <div class="product-img combo">🍱</div>
+        <div class="product-body">
+          <div class="product-tag">Best Value</div>
+          <div class="product-name">Meal Combos</div>
+          <p class="product-desc">Complete balanced meals — roti + sabzi + rice. Everything you need in one convenient pack.</p>
+          <div class="product-footer">
+            <div class="product-price">₹50–₹70 <span>/ combo</span></div>
+            <a href="#plans" class="btn-sm">Order →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="section-tag">Process</div>
+    <h2 class="section-title">Simpler than ordering pizza</h2>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">🛒</div>
+        <h3>Order Online</h3>
+        <p>Choose your plan or products. We'll confirm your weekly delivery schedule.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">❄️</div>
+        <h3>We Deliver Fresh</h3>
+        <p>Freshly prepared & flash-frozen meals arrive at your door. Store in your freezer.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">🔥</div>
+        <h3>Heat in 2 Min</h3>
+        <p>Pull from freezer. Pan, microwave, or tawa — ready in under 2 minutes. No skill needed.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">😋</div>
+        <h3>Eat & Repeat</h3>
+        <p>Enjoy a fresh, hygienic, homemade-taste meal anytime. Subscribe and never worry again.</p>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- PLANS -->
+<section id="plans">
+  <div class="container">
+    <div class="section-tag">Subscription Plans</div>
+    <h2 class="section-title">A plan for every lifestyle</h2>
+    <p class="section-sub">Weekly plans designed around your routine. Cancel or pause anytime.</p>
+    <div class="plans-grid">
+ 
+      <div class="plan-card reveal">
+        <span class="plan-icon">🎓</span>
+        <div class="plan-name">Student Plan</div>
+        <p class="plan-tagline">Perfect for hostel & PG life</p>
+        <div class="plan-price">
+          <span class="amount">₹2k-3k</span>
+          <span class="period">/week</span>
+        </div>
+        <div class="plan-meals">~21 rotis + 3 meal combos</div>
+        <ul class="plan-features">
+          <li>21 frozen rotis per week</li>
+          <li>3 complete meal combos</li>
+          <li>Weekly doorstep delivery</li>
+          <li>FSSAI certified quality</li>
+          <li>Pause or cancel anytime</li>
+        </ul>
+        <a href="#contact" class="btn-plan outline">Get Student Plan</a>
+      </div>
+ 
+      <div class="plan-card featured reveal">
+        <span class="plan-icon">💼</span>
+        <div class="plan-name">Bachelor Plan</div>
+        <p class="plan-tagline">For working professionals</p>
+        <div class="plan-price">
+          <span class="amount">₹2k-4k</span>
+          <span class="period">/week</span>
+        </div>
+        <div class="plan-meals">~35 rotis + 7 meal combos</div>
+        <ul class="plan-features">
+          <li>35 frozen rotis + parathas</li>
+          <li>7 complete meal combos</li>
+          <li>Priority delivery slots</li>
+          <li>Mix & match flavors</li>
+          <li>Dedicated support line</li>
+          <li>Free first week delivery</li>
+        </ul>
+        <a href="#contact" class="btn-plan solid">Get Bachelor Plan</a>
+      </div>
+ 
+      <div class="plan-card reveal">
+        <span class="plan-icon">👨‍👩‍👧</span>
+        <div class="plan-name">Family Plan</div>
+        <p class="plan-tagline">For busy households</p>
+        <div class="plan-price">
+          <span class="amount">₹3k-6k</span>
+          <span class="period">/week</span>
+        </div>
+        <div class="plan-meals">~60 rotis + 14 meal combos</div>
+        <ul class="plan-features">
+          <li>60 rotis + assorted parathas</li>
+          <li>14 full family meal combos</li>
+          <li>Customizable meal mix</li>
+          <li>Weekend delivery option</li>
+          <li>10% bulk discount</li>
+          <li>Priority customer support</li>
+        </ul>
+        <a href="#contact" class="btn-plan outline">Get Family Plan</a>
+      </div>
+ 
+    </div>
+  </div>
+</section>
+ 
+<!-- TESTIMONIALS -->
+<section id="Future testimonials">
+  <div class="container">
+    <div class="section-tag">future Testimonials</div>
+    <h2 class="section-title">What our customers will say</h2>
+    <div class="testi-grid">
+ 
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"-------------------------------------------------------------"</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background: rgba(30,111,255,0.2);">👦</div>
+          <div>
+            <div class="testi-name">Rahul Verma</div>
+            <div class="testi-role">Engineering student, RGPV Bhopal</div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"--------------------------------------------------------------"</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background: rgba(255,107,53,0.2);">👨</div>
+          <div>
+            <div class="testi-name">Arjun Sharma</div>
+            <div class="testi-role">Software Developer, Bhopal</div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"---------------------------------------------------------------------"</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background: rgba(255,184,48,0.2);">👩</div>
+          <div>
+            <div class="testi-name">Priya Gupta</div>
+            <div class="testi-role">PG Owner, Kolar Road</div>
+          </div>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+</section>
+ 
+<!-- CTA BANNER -->
+<section id="cta">
+  <div class="cta-inner">
+    <div class="section-tag" style="justify-content: center;">Start Today</div>
+    <h2 class="section-title">Your first order is one click away</h2>
+    <p class="cta-sub">Join hundreds of students, bachelors & families already eating smarter with FrozenNow. First delivery this week.</p>
+    <div class="cta-btns">
+      <a href="#plans" class="btn-primary">🛒 Subscribe Now</a>
+      <a href="https://wa.me/917000000000" class="btn-secondary">💬 WhatsApp Us</a>
+    </div>
+  </div>
+</section>
+ 
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="section-tag" style="justify-content: center;">Get In Touch</div>
+    <h2 class="section-title">We're always one message away</h2>
+    <p class="section-sub" style="margin: 1rem auto;">Questions, bulk orders, or partnership inquiries — reach us directly.</p>
+    <div class="contact-cards">
+      <a href="https://wa.me/917000000000" class="contact-card whatsapp reveal">
+        <div class="contact-icon">💬</div>
+        <div>
+          <div class="contact-label">WhatsApp</div>
+          <div class="contact-value">+91 70000 00000</div>
+        </div>
+      </a>
+      <a href="mailto:hello@frozennow.in" class="contact-card email reveal">
+        <div class="contact-icon">📧</div>
+        <div>
+          <div class="contact-label">Email Us</div>
+          <div class="contact-value">hello@frozennow.in</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">FrozenNow</div>
+  <p>© 2025 FrozenNow Foods · Founded by Sushant Sharma · Bhopal, India</p>
+  <p style="margin-top: 0.4rem; font-size: 0.78rem;">FSSAI Certified · No Preservatives · Made Fresh Daily</p>
+</footer>
+ 
+<script>
+  // Mobile nav toggle
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+ 
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, (i % 4) * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+ 
+  reveals.forEach(el => observer.observe(el));
+ 
+  // Navbar scroll style
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 60) {
+      nav.style.padding = '0.8rem 2rem';
+      nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.4)';
+    } else {
+      nav.style.padding = '1.2rem 2rem';
+      nav.style.boxShadow = 'none';
+    }
+  });
+ 
+  // Close nav on link click (mobile)
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => {
+      document.getElementById('navLinks').classList.remove('open');
+    });
+  });
+ 
+  // Smooth counter animation for stats
+  const stats = document.querySelectorAll('.stat-num, .big-stat-num');
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '0';
+        entry.target.style.transform = 'scale(0.8)';
+        entry.target.style.transition = 'all 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'scale(1)';
+        }, 100);
+        statsObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+ 
+  stats.forEach(s => statsObserver.observe(s));
+</script>
+</body>
+</html>
